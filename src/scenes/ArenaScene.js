@@ -301,7 +301,7 @@ export class ArenaScene extends Phaser.Scene {
 
     const isTouch = ui.mode === 'mobile';
     const hint = isTouch
-      ? 'Left stick: move   |   Right stick: aim, push far to fire   |   FLY: jetpack'
+      ? 'Left stick: move, push UP to fly   |   Right stick: aim, push far to fire'
       : 'A/D or arrows: move   |   hold W / UP / SPACE: jetpack (watch the blue bar)';
     this.hintText = this.add.text(this.scale.width / 2, this.scale.height - 18, hint, {
       fontFamily: font, fontSize: '15px', color: '#2b2b2b', backgroundColor: '#f3efe3', padding: { x: 10, y: 4 },
@@ -315,7 +315,7 @@ export class ArenaScene extends Phaser.Scene {
   updateControlHint() {
     if (!this.hintText) return;
     this.hintText.setText(ui.mode === 'mobile'
-      ? 'Left stick: move   |   Right stick: aim, push far to fire   |   FLY: jetpack'
+      ? 'Left stick: move, push UP to fly   |   Right stick: aim, push far to fire'
       : 'A/D or arrows: move   |   hold W / UP / SPACE: jetpack (watch the blue bar)');
   }
 

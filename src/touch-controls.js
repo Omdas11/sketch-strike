@@ -1,5 +1,5 @@
 // DOM twin-stick touch controls (Mini Militia layout):
-// left stick = move, right stick = aim (push past ~55% to fire), FLY = jetpack.
+// left stick = move (push UP to fly), right stick = aim (push past ~55% to fire).
 // Writes into scene.touchState every pointer event; the scene reads it in update().
 export function setTouchUIVisible(v) {
   const el = document.getElementById('touch-ui');
@@ -10,11 +10,11 @@ export function initTouchControls(scene) {
   const ts = scene.touchState;
   const leftEl = document.getElementById('stick-left');
   const rightEl = document.getElementById('stick-right');
-  const flyEl = document.getElementById('btn-fly');
-  if (!leftEl || !rightEl || !flyEl || !ts) return;
+  if (!leftEl || !rightEl || !ts) return;
 
-  makeStick(leftEl, (x) => {
+  makeStick(leftEl, (x, y) => {
     ts.moveX = Math.abs(x) < 0.18 ? 0 : x; // deadzone
+    ts.thrust = y < -0.45; // push the stick up to fly
   });
 
   makeStick(rightEl, (x, y, active, mag) => {
@@ -26,18 +26,6 @@ export function initTouchControls(scene) {
       ts.firing = false;
     }
   });
-
-  const setFly = (v) => {
-    ts.thrust = v;
-    flyEl.classList.toggle('held', v);
-  };
-  flyEl.addEventListener('pointerdown', (e) => {
-    e.preventDefault();
-    try { flyEl.setPointerCapture(e.pointerId); } catch (err) {}
-    setFly(true);
-  });
-  flyEl.addEventListener('pointerup', () => setFly(false));
-  flyEl.addEventListener('pointercancel', () => setFly(false));
 }
 
 function makeStick(baseEl, onMove) {
