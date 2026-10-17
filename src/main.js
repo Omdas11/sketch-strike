@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { ArenaScene } from './scenes/ArenaScene.js';
+import { ui } from './state.js';
+import { setTouchUIVisible } from './touch-controls.js';
 
 // ---- mobile web: landscape-first -------------------------------------------
 // The game is designed for landscape. On phones held in portrait we show a
@@ -10,6 +12,30 @@ import { ArenaScene } from './scenes/ArenaScene.js';
 const isMobile =
   /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
   (navigator.maxTouchPoints > 1 && Math.min(window.screen.width, window.screen.height) < 820);
+ui.isMobile = isMobile;
+try {
+  ui.mode = localStorage.getItem('sketch-mode') || (isMobile ? 'mobile' : 'desktop');
+} catch (e) {
+  ui.mode = isMobile ? 'mobile' : 'desktop';
+}
+
+// desktop/mobile control-mode toggle: in desktop mode the touch sticks hide
+const modeBtn = document.getElementById('mode-btn');
+function applyMode() {
+  const mobile = ui.mode === 'mobile';
+  setTouchUIVisible(mobile);
+  if (modeBtn) modeBtn.textContent = mobile ? 'MOBILE' : 'DESKTOP';
+  try { localStorage.setItem('sketch-mode', ui.mode); } catch (e) {}
+  const arena = window.game && window.game.scene.getScene('arena');
+  if (arena && arena.updateControlHint) arena.updateControlHint();
+}
+if (modeBtn) {
+  modeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    ui.mode = ui.mode === 'mobile' ? 'desktop' : 'mobile';
+    applyMode();
+  });
+}
 
 const rotateHint = document.getElementById('rotate-hint');
 const fsBtn = document.getElementById('fs-btn');
@@ -71,6 +97,7 @@ document.addEventListener('fullscreenchange', () => {
 });
 syncFsBtn();
 checkOrientation();
+applyMode();
 
 // no long-press menu / text selection getting in the way of the game
 document.addEventListener('contextmenu', (e) => { if (isMobile) e.preventDefault(); });

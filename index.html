@@ -44,6 +44,36 @@
       border: 3px solid #2b2b2b; border-radius: 10px;
       padding: 6px 12px; cursor: pointer;
     }
+    /* desktop/mobile control-mode toggle */
+    #mode-btn {
+      position: fixed; top: 10px; right: 102px; z-index: 40;
+      font-family: "Segoe Print", "Comic Sans MS", cursive; font-size: 14px;
+      color: #2b2b2b; background: #f3efe3;
+      border: 3px solid #2b2b2b; border-radius: 10px;
+      padding: 6px 12px; cursor: pointer;
+    }
+    /* twin-stick touch controls */
+    #touch-ui { position: fixed; inset: 0; z-index: 30; pointer-events: none; display: none; }
+    .stick {
+      position: absolute; width: 124px; height: 124px; border-radius: 50%;
+      border: 3px solid rgba(43,43,43,.55); background: rgba(243,239,227,.25);
+      pointer-events: auto; touch-action: none;
+    }
+    .stick .knob {
+      position: absolute; left: 50%; top: 50%; width: 56px; height: 56px;
+      margin: -28px 0 0 -28px; border-radius: 50%;
+      background: rgba(43,43,43,.55);
+    }
+    #stick-left { left: 22px; bottom: 22px; }
+    #stick-right { right: 22px; bottom: 22px; }
+    #btn-fly {
+      position: absolute; right: 36px; bottom: 172px; width: 88px; height: 88px;
+      border-radius: 50%; border: 3px solid #2b2b2b;
+      background: rgba(255,140,46,.45); color: #2b2b2b;
+      font-family: "Segoe Print", "Comic Sans MS", cursive; font-size: 18px;
+      pointer-events: auto; touch-action: none; cursor: pointer;
+    }
+    #btn-fly.held { background: rgba(255,140,46,.9); }
   </style>
 </head>
 <body>
@@ -54,6 +84,12 @@
     <div class="t2">or tap here - the game turns itself landscape</div>
   </div>
   <button id="fs-btn" aria-label="Toggle fullscreen">FULL</button>
+  <button id="mode-btn" aria-label="Toggle control mode">DESKTOP</button>
+  <div id="touch-ui">
+    <div id="stick-left" class="stick"><div class="knob"></div></div>
+    <div id="stick-right" class="stick"><div class="knob"></div></div>
+    <button id="btn-fly">FLY</button>
+  </div>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { ui } from '../state.js';
+import { initTouchControls, setTouchUIVisible } from '../touch-controls.js';
 
 // ---------------------------------------------------------------------------
 // ArenaScene - Phase 1 movement playground.
@@ -169,7 +171,6 @@ export class ArenaScene extends Phaser.Scene {
     makeTextures(this);
 
     this.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
-    this.input.addPointer(2); // allow move + thrust touches at once
 
     // ---- parallax background ------------------------------------------------
     // far mountains
@@ -270,12 +271,13 @@ export class ArenaScene extends Phaser.Scene {
 
     // ---- input ------------------------------------------------------------------
     this.keys = this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,SPACE');
-    this.touch = { left: false, right: false, thrust: false };
-    this.touchZones = new Map();
-    this.input.on('pointerdown', (p) => this.setTouch(p, true));
-    this.input.on('pointerup', (p) => this.setTouch(p, false));
-    this.input.on('pointerupoutside', (p) => this.setTouch(p, false));
-    this.input.on('pointercancel', (p) => this.setTouch(p, false));
+    // written by the DOM twin-stick controls (touch-controls.js)
+    this.touchState = { moveX: 0, thrust: false, aimAngle: 0, aiming: false, firing: false };
+    initTouchControls(this);
+    setTouchUIVisible(ui.mode === 'mobile');
+
+    // aim indicator (right stick); firing flash plugs into weapons in phase 2
+    this.aimGfx = this.add.graphics().setDepth(9);
 
     // ---- HUD ----------------------------------------------------------------------
     this.fuel = FUEL_MAX;
@@ -297,32 +299,24 @@ export class ArenaScene extends Phaser.Scene {
     this.hpFill = bar(cx, 26, 240, 'HP', 0xff5d8f);
     this.fuelFill = bar(cx, 50, 240, 'FUEL', 0x3aa7ff);
 
-    const isTouch = this.sys.game.device.input.touch;
+    const isTouch = ui.mode === 'mobile';
     const hint = isTouch
-      ? 'touch: left third = move left | right third = move right | middle = JETPACK'
+      ? 'Left stick: move   |   Right stick: aim, push far to fire   |   FLY: jetpack'
       : 'A/D or arrows: move   |   hold W / UP / SPACE: jetpack (watch the blue bar)';
-    hud.add(this.add.text(this.scale.width / 2, this.scale.height - 18, hint, {
+    this.hintText = this.add.text(this.scale.width / 2, this.scale.height - 18, hint, {
       fontFamily: font, fontSize: '15px', color: '#2b2b2b', backgroundColor: '#f3efe3', padding: { x: 10, y: 4 },
-    }).setOrigin(0.5, 1));
+    }).setOrigin(0.5, 1);
+    hud.add(this.hintText);
 
     this.wasAirborne = false;
     this.fallSpeed = 0;
   }
 
-  setTouch(pointer, down) {
-    const w = this.scale.width;
-    let zone = null;
-    if (pointer.x < w * 0.35) zone = 'left';
-    else if (pointer.x > w * 0.65) zone = 'right';
-    else zone = 'thrust';
-    if (down) this.touchZones.set(pointer.id, zone);
-    else this.touchZones.delete(pointer.id);
-    this.touch.left = this.touch.right = this.touch.thrust = false;
-    for (const z of this.touchZones.values()) {
-      if (z === 'left') this.touch.left = true;
-      else if (z === 'right') this.touch.right = true;
-      else this.touch.thrust = true;
-    }
+  updateControlHint() {
+    if (!this.hintText) return;
+    this.hintText.setText(ui.mode === 'mobile'
+      ? 'Left stick: move   |   Right stick: aim, push far to fire   |   FLY: jetpack'
+      : 'A/D or arrows: move   |   hold W / UP / SPACE: jetpack (watch the blue bar)');
   }
 
   update(time, delta) {
@@ -330,25 +324,26 @@ export class ArenaScene extends Phaser.Scene {
     const p = this.player;
     const body = p.body;
     const k = this.keys;
+    const ts = this.touchState;
 
-    const left = k.LEFT.isDown || k.A.isDown || this.touch.left;
-    const right = k.RIGHT.isDown || k.D.isDown || this.touch.right;
-    const thrust = k.UP.isDown || k.W.isDown || k.SPACE.isDown || this.touch.thrust;
+    const left = k.LEFT.isDown || k.A.isDown || ts.moveX < -0.18;
+    const right = k.RIGHT.isDown || k.D.isDown || ts.moveX > 0.18;
+    const thrust = k.UP.isDown || k.W.isDown || k.SPACE.isDown || ts.thrust;
 
-    // horizontal movement: snappy on ground, drifty in air
-    const dir = (right ? 1 : 0) - (left ? 1 : 0);
-    if (body.blocked.down || body.touching.down) {
-      body.velocity.x = dir * RUN_SPEED;
-    } else if (dir !== 0) {
-      body.velocity.x = Phaser.Math.Clamp(
-        body.velocity.x + dir * AIR_ACCEL * dt, -RUN_SPEED, RUN_SPEED
-      );
+    // horizontal movement: keyboard is digital, left stick is analog
+    let mx = (right ? 1 : 0) - (left ? 1 : 0);
+    if (mx === 0 && Math.abs(ts.moveX) > 0.18) mx = ts.moveX;
+    const onGround = body.blocked.down || body.touching.down;
+    if (onGround) {
+      body.velocity.x = mx * RUN_SPEED;
+    } else if (mx !== 0) {
+      const target = mx * RUN_SPEED;
+      body.velocity.x += Phaser.Math.Clamp(target - body.velocity.x, -AIR_ACCEL * dt, AIR_ACCEL * dt);
     } else {
       body.velocity.x *= Math.pow(0.02, dt); // air drag
     }
 
     // jetpack
-    const onGround = body.blocked.down || body.touching.down;
     const thrusting = thrust && this.fuel > 0;
     if (thrusting) {
       body.velocity.y = JETPACK_VY;
@@ -357,10 +352,31 @@ export class ArenaScene extends Phaser.Scene {
       this.fuel = Math.min(FUEL_MAX, this.fuel + FUEL_REGEN * dt);
     }
 
-    // facing + lean
-    if (body.velocity.x > 20) p.setFlipX(false);
-    else if (body.velocity.x < -20) p.setFlipX(true);
+    // facing + lean (aim stick overrides movement facing)
+    if (ts.aiming) {
+      p.setFlipX(Math.cos(ts.aimAngle) < 0);
+    } else if (body.velocity.x > 20) {
+      p.setFlipX(false);
+    } else if (body.velocity.x < -20) {
+      p.setFlipX(true);
+    }
     p.setAngle(Phaser.Math.Clamp(body.velocity.x * 0.03, -14, 14));
+
+    // aim indicator + firing flash (mobile mode; weapons plug in next phase)
+    this.aimGfx.clear();
+    if (ts.aiming && ui.mode === 'mobile') {
+      const ax = Math.cos(ts.aimAngle), ay = Math.sin(ts.aimAngle);
+      const x2 = p.x + ax * 82, y2 = p.y + ay * 82;
+      this.aimGfx.lineStyle(3, INK, 0.8);
+      this.aimGfx.lineBetween(p.x + ax * 30, p.y + ay * 30, x2, y2);
+      this.aimGfx.strokeCircle(x2, y2, 7);
+      if (ts.firing) {
+        this.aimGfx.fillStyle(0xffd93a, 1);
+        this.aimGfx.fillCircle(x2, y2, 10);
+        this.aimGfx.lineStyle(3, 0xff8c2e, 1);
+        this.aimGfx.strokeCircle(x2, y2, 15);
+      }
+    }
 
     // flame follows the jetpack nozzle
     const facing = p.flipX ? -1 : 1;
