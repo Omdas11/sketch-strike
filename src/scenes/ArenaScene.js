@@ -168,7 +168,6 @@ export class ArenaScene extends Phaser.Scene {
   }
 
   create() {
-    if (window.__boot) window.__boot.push('create-start');
     makeTextures(this);
 
     this.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
@@ -311,10 +310,6 @@ export class ArenaScene extends Phaser.Scene {
 
     this.wasAirborne = false;
     this.fallSpeed = 0;
-    if (window.__boot) {
-      window.__boot.push('create-end');
-      document.title = 'Sketch Strike [boot:' + window.__boot.join(',') + ']';
-    }
   }
 
   updateControlHint() {

@@ -3,16 +3,10 @@ import { ArenaScene } from './scenes/ArenaScene.js';
 import { ui } from './state.js';
 import { setTouchUIVisible } from './touch-controls.js';
 
-// TEMPORARY boot diagnostics: surface any boot error as visible page text.
-window.__boot = ['module-ok'];
-window.addEventListener('error', (e) => {
-  let stack = '';
-  try { stack = String((e && e.error && e.error.stack) || '').split('\n').slice(0, 5).join(' // '); } catch (x) {}
-  const msg = 'ERR: ' + ((e && e.message) || 'unknown') + ' @ ' + (e.filename || '?') + ':' + (e.lineno || '?') + ' :: ' + stack;
-  window.__boot.push(msg);
-  const b = document.getElementById('boot-badge');
-  if (b) { b.style.display = 'block'; b.textContent = window.__boot.join('\n'); }
-});
+// NOTE: the game instance lives on window.__sketchStrikeGame, NOT window.game.
+// Some browser environments (automation harnesses, extensions) pre-populate a
+// global called `window.game`, which once crashed our boot via an unguarded
+// `window.game.scene.getScene()` call. Unique name + guarded access.
 
 // ---- mobile web: landscape-first -------------------------------------------
 // The game is designed for landscape. On phones held in portrait we show a
@@ -37,12 +31,8 @@ function applyMode() {
   setTouchUIVisible(mobile);
   if (modeBtn) modeBtn.textContent = mobile ? 'MOBILE' : 'DESKTOP';
   try { localStorage.setItem('sketch-mode', ui.mode); } catch (e) {}
-  // TEMPORARY diagnostic: what is window.game at this point?
-  if (window.__boot && window.__boot.indexOf('mode-checked') === -1) {
-    window.__boot.push('mode-checked: game=' + typeof window.game +
-      ' scene=' + typeof (window.game && window.game.scene));
-  }
-  const arena = (window.game && window.game.scene) ? window.game.scene.getScene('arena') : null;
+  const g = window.__sketchStrikeGame;
+  const arena = (g && g.scene) ? g.scene.getScene('arena') : null;
   if (arena && arena.updateControlHint) arena.updateControlHint();
 }
 if (modeBtn) {
@@ -66,8 +56,8 @@ function checkOrientation() {
 // fires visualViewport.resize). Double-refresh because layout needs a beat
 // to settle, otherwise the game can get stuck rendering small.
 function refreshGame() {
-  if (!window.game) return;
-  [120, 450].forEach((ms) => setTimeout(() => window.game.scale.refresh(), ms));
+  if (!window.__sketchStrikeGame) return;
+  [120, 450].forEach((ms) => setTimeout(() => window.__sketchStrikeGame.scale.refresh(), ms));
 }
 
 window.addEventListener('resize', () => { checkOrientation(); refreshGame(); });
@@ -118,7 +108,7 @@ applyMode();
 // no long-press menu / text selection getting in the way of the game
 document.addEventListener('contextmenu', (e) => { if (isMobile) e.preventDefault(); });
 
-window.game = new Phaser.Game({
+window.__sketchStrikeGame = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
   backgroundColor: '#f3efe3',
@@ -134,4 +124,3 @@ window.game = new Phaser.Game({
   },
   scene: [ArenaScene],
 });
-window.__boot.push('game-new');

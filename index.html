@@ -74,13 +74,6 @@
       pointer-events: auto; touch-action: none; cursor: pointer;
     }
     #btn-fly.held { background: rgba(255,140,46,.9); }
-    /* temporary boot diagnostics */
-    #boot-badge {
-      display: none; position: fixed; top: 60px; left: 10px; z-index: 60;
-      max-width: 90vw; background: #b00020; color: #fff;
-      font: 13px monospace; padding: 8px 10px; border-radius: 8px;
-      white-space: pre-wrap; word-break: break-word;
-    }
   </style>
 </head>
 <body>
@@ -92,7 +85,6 @@
   </div>
   <button id="fs-btn" aria-label="Toggle fullscreen">FULL</button>
   <button id="mode-btn" aria-label="Toggle control mode">DESKTOP</button>
-  <div id="boot-badge"></div>
   <div id="touch-ui">
     <div id="stick-left" class="stick"><div class="knob"></div></div>
     <div id="stick-right" class="stick"><div class="knob"></div></div>
