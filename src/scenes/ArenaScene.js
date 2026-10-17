@@ -516,11 +516,8 @@ export class ArenaScene extends Phaser.Scene {
     this.wasAirborne = false;
     this.fallSpeed = 0;
 
-    // menu overlay on first load (DOM, wired in main.js)
-    if (!ui.started && window.SketchMenu) {
-      window.SketchMenu.show();
-      this.physics.world.pause();
-    }
+    // menu overlay on first load (DOM, wired in main.js; landscape only)
+    if (!ui.started && window.SketchMenu) window.SketchMenu.show();
   }
 
   // ---- combat methods ---------------------------------------------------------

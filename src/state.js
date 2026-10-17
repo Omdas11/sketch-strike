@@ -5,6 +5,7 @@ export const ui = {
   map: 'yard', // 'yard' | 'sky' | 'maze'
   bots: 2,
   started: false, // flips true when the player presses START in the menu
+  wantMenu: false, // menu overlay intent (main.js decides if it actually shows)
 };
 
 // Three original arena layouts. Coordinates are world-space; platforms and

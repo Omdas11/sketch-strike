@@ -81,6 +81,11 @@
     .card h1 { margin: 0 0 2px; font-size: 34px; letter-spacing: 2px; }
     .card .sub { margin: 0 0 16px; color: #6b6b6b; font-size: 15px; }
     .card .map-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap; }
+    .card .map-row button { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .card .map-thumb {
+      width: 132px; height: 78px; object-fit: cover;
+      border: 2px solid #2b2b2b; border-radius: 6px; background: #f3efe3;
+    }
     .card button {
       font-family: inherit; font-size: 16px; color: #2b2b2b;
       background: #fff; border: 3px solid #2b2b2b; border-radius: 10px;
@@ -110,9 +115,9 @@
       <h1>SKETCH STRIKE</h1>
       <p class="sub">doodle deathmatch - you vs 2 bots</p>
       <div class="map-row" id="map-row">
-        <button data-map="yard" class="sel">Doodle Yard</button>
-        <button data-map="sky">Sky Bridges</button>
-        <button data-map="maze">Crate Maze</button>
+        <button data-map="yard" class="sel"><img class="map-thumb" alt="Doodle Yard layout preview"><span>Doodle Yard</span></button>
+        <button data-map="sky"><img class="map-thumb" alt="Sky Bridges layout preview"><span>Sky Bridges</span></button>
+        <button data-map="maze"><img class="map-thumb" alt="Crate Maze layout preview"><span>Crate Maze</span></button>
       </div>
       <button id="start-btn" class="big">START FIGHT</button>
       <p class="fine">first to 7 kills wins - 5:00 on the clock<br>grab a gun, watch your fuel</p>
