@@ -6,7 +6,9 @@ import { setTouchUIVisible } from './touch-controls.js';
 // TEMPORARY boot diagnostics: surface any boot error as visible page text.
 window.__boot = ['module-ok'];
 window.addEventListener('error', (e) => {
-  const msg = 'ERR: ' + ((e && e.message) || 'unknown');
+  let stack = '';
+  try { stack = String((e && e.error && e.error.stack) || '').split('\n').slice(0, 5).join(' // '); } catch (x) {}
+  const msg = 'ERR: ' + ((e && e.message) || 'unknown') + ' @ ' + (e.filename || '?') + ':' + (e.lineno || '?') + ' :: ' + stack;
   window.__boot.push(msg);
   const b = document.getElementById('boot-badge');
   if (b) { b.style.display = 'block'; b.textContent = window.__boot.join('\n'); }
