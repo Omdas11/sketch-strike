@@ -449,8 +449,8 @@ export class ArenaScene extends Phaser.Scene {
     }
 
     // ---- doodle decorations (no collision) --------------------------------------
-    // sleepy sun, fixed in the sky
-    this.add.image(2150, 190, 'sun').setScrollFactor(0.15).setDepth(-25).setScale(1.2);
+    // sleepy sun, fixed in the sky (screen-space so it is always visible)
+    this.add.image(1090, 140, 'sun').setScrollFactor(0).setDepth(-25).setScale(1.1);
     // birds drifting with the clouds
     for (let i = 0; i < 6; i++) {
       this.add.image(Phaser.Math.Between(100, WORLD_W - 100), Phaser.Math.Between(150, 450), 'bird')
