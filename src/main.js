@@ -235,8 +235,9 @@ setInterval(() => {
   const a = (g && g.scene) ? g.scene.getScene('arena') : null;
   const ts = a ? a.touchState : null;
   const fmt = (s) => {
-    const d = (s && s._dbg) || { pid: '?', x: 0, y: 0, n: 0 };
-    return 'pid=' + d.pid + ' x=' + Number(d.x).toFixed(2) + ' y=' + Number(d.y).toFixed(2) + ' #' + d.n;
+    const d = (s && s._dbg) || { pid: '?', x: 0, y: 0, n: 0, m: 0 };
+    return 'pid=' + d.pid + ' x=' + Number(d.x).toFixed(2) + ' y=' + Number(d.y).toFixed(2) +
+      ' down#' + d.n + ' move#' + d.m;
   };
   b.textContent =
     'mode=' + ui.mode + ' touchUI=' + (tui ? (tui.style.display || 'css') : '?') +

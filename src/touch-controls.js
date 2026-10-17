@@ -1,6 +1,11 @@
 // DOM twin-stick touch controls (Mini Militia layout):
 // left stick = move (push UP to fly), right stick = aim (push past ~55% to fire).
 // Writes into scene.touchState every pointer event; the scene reads it in update().
+//
+// Implementation note: pointermove/up/cancel are tracked on `window` (filtered
+// by pointerId), NOT via setPointerCapture. Capture is unreliable on some
+// mobile browsers: when it silently fails, the stick stops tracking the moment
+// the finger leaves the small base circle, which feels "not working".
 export function setTouchUIVisible(v) {
   const el = document.getElementById('touch-ui');
   if (el) el.style.display = v ? 'block' : 'none';
@@ -30,39 +35,47 @@ export function initTouchControls(scene) {
 
 function makeStick(baseEl, onMove) {
   const knob = baseEl.querySelector('.knob');
-  const R = 46; // max knob travel in px
+  const R = 52; // max knob travel in px
   let pid = null;
   // TEMPORARY touch diagnostics (removed after the phone-controller fix)
-  baseEl._dbg = { pid: '-', x: 0, y: 0, n: 0 };
+  baseEl._dbg = { pid: '-', x: 0, y: 0, n: 0, m: 0 };
 
   const render = (dx, dy) => {
     knob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
   };
 
-  const handle = (e) => {
+  const centerOffset = (e) => {
     const r = baseEl.getBoundingClientRect();
-    let dx = e.clientX - (r.left + r.width / 2);
-    let dy = e.clientY - (r.top + r.height / 2);
+    return [e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2)];
+  };
+
+  const handle = (dx, dy) => {
     const len = Math.hypot(dx, dy) || 0.0001;
     const mag = Math.min(len / R, 1);
-    if (len > R) { dx = (dx / len) * R; dy = (dy / len) * R; }
-    render(dx, dy);
-    baseEl._dbg.x = dx / R;
-    baseEl._dbg.y = dy / R;
-    onMove(dx / R, dy / R, len > 10, mag);
+    let rx = dx, ry = dy;
+    if (len > R) { rx = (dx / len) * R; ry = (dy / len) * R; }
+    render(rx, ry);
+    baseEl._dbg.x = rx / R;
+    baseEl._dbg.y = ry / R;
+    onMove(rx / R, ry / R, len > 10, mag);
   };
 
   baseEl.addEventListener('pointerdown', (e) => {
-    e.preventDefault();
+    if (pid !== null) return; // one finger per stick
     pid = e.pointerId;
     baseEl._dbg.pid = pid;
     baseEl._dbg.n += 1;
-    try { baseEl.setPointerCapture(pid); } catch (err) {}
-    handle(e);
+    const [dx, dy] = centerOffset(e);
+    handle(dx, dy);
   });
-  baseEl.addEventListener('pointermove', (e) => {
-    if (e.pointerId === pid) handle(e);
+
+  window.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== pid) return;
+    baseEl._dbg.m += 1;
+    const [dx, dy] = centerOffset(e);
+    handle(dx, dy);
   });
+
   const release = (e) => {
     if (e.pointerId !== pid) return;
     pid = null;
@@ -72,6 +85,6 @@ function makeStick(baseEl, onMove) {
     render(0, 0);
     onMove(0, 0, false, 0);
   };
-  baseEl.addEventListener('pointerup', release);
-  baseEl.addEventListener('pointercancel', release);
+  window.addEventListener('pointerup', release);
+  window.addEventListener('pointercancel', release);
 }
