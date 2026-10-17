@@ -3,6 +3,15 @@ import { ArenaScene } from './scenes/ArenaScene.js';
 import { ui } from './state.js';
 import { setTouchUIVisible } from './touch-controls.js';
 
+// TEMPORARY boot diagnostics: surface any boot error as visible page text.
+window.__boot = ['module-ok'];
+window.addEventListener('error', (e) => {
+  const msg = 'ERR: ' + ((e && e.message) || 'unknown');
+  window.__boot.push(msg);
+  const b = document.getElementById('boot-badge');
+  if (b) { b.style.display = 'block'; b.textContent = window.__boot.join('\n'); }
+});
+
 // ---- mobile web: landscape-first -------------------------------------------
 // The game is designed for landscape. On phones held in portrait we show a
 // tappable "rotate your phone" overlay. Browsers never let a page rotate the
@@ -118,3 +127,4 @@ window.game = new Phaser.Game({
   },
   scene: [ArenaScene],
 });
+window.__boot.push('game-new');
