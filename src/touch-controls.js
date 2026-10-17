@@ -32,6 +32,8 @@ function makeStick(baseEl, onMove) {
   const knob = baseEl.querySelector('.knob');
   const R = 46; // max knob travel in px
   let pid = null;
+  // TEMPORARY touch diagnostics (removed after the phone-controller fix)
+  baseEl._dbg = { pid: '-', x: 0, y: 0, n: 0 };
 
   const render = (dx, dy) => {
     knob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
@@ -45,12 +47,16 @@ function makeStick(baseEl, onMove) {
     const mag = Math.min(len / R, 1);
     if (len > R) { dx = (dx / len) * R; dy = (dy / len) * R; }
     render(dx, dy);
+    baseEl._dbg.x = dx / R;
+    baseEl._dbg.y = dy / R;
     onMove(dx / R, dy / R, len > 10, mag);
   };
 
   baseEl.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     pid = e.pointerId;
+    baseEl._dbg.pid = pid;
+    baseEl._dbg.n += 1;
     try { baseEl.setPointerCapture(pid); } catch (err) {}
     handle(e);
   });
@@ -60,6 +66,9 @@ function makeStick(baseEl, onMove) {
   const release = (e) => {
     if (e.pointerId !== pid) return;
     pid = null;
+    baseEl._dbg.pid = '-';
+    baseEl._dbg.x = 0;
+    baseEl._dbg.y = 0;
     render(0, 0);
     onMove(0, 0, false, 0);
   };

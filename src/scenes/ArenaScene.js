@@ -35,55 +35,96 @@ function makeTextures(scene) {
   const g = scene.make.graphics({ x: 0, y: 0, add: false });
 
   // -- doodle soldier (56x72), faces right --------------------------------
-  // chunkier chibi commando: big helmet head, tunic, boots, jetpack on back
+  // chunky commando: helmet dome with badge, vest, two arms, twin-tank pack
   g.clear();
-  g.lineStyle(4, INK, 1);
-  // jetpack (on the back, left side)
+  // jetpack: twin tanks on the back (left side)
   g.fillStyle(0xc96f2e, 1);
-  g.fillRoundedRect(4, 36, 13, 22, 4);
-  g.strokeRoundedRect(4, 36, 13, 22, 4);
+  g.fillRoundedRect(3, 36, 8, 22, 3);
+  g.fillRoundedRect(11, 36, 8, 22, 3);
+  g.lineStyle(3, INK, 1);
+  g.strokeRoundedRect(3, 36, 8, 22, 3);
+  g.strokeRoundedRect(11, 36, 8, 22, 3);
+  // tank caps
   g.fillStyle(0x8a4d1d, 1);
-  g.fillTriangle(6, 58, 15, 58, 10.5, 65); // nozzle
+  g.fillRoundedRect(3, 33, 8, 5, 2);
+  g.fillRoundedRect(11, 33, 8, 5, 2);
+  g.lineStyle(3, INK, 1);
+  g.strokeRoundedRect(3, 33, 8, 5, 2);
+  g.strokeRoundedRect(11, 33, 8, 5, 2);
+  // nozzle
+  g.fillStyle(0x5a5a5a, 1);
+  g.fillTriangle(5, 58, 17, 58, 11, 66);
+  g.lineStyle(3, INK, 1);
+  g.strokeTriangle(5, 58, 17, 58, 11, 66);
+  // harness straps
   g.lineStyle(3, INK, 0.9);
-  g.lineBetween(17, 40, 41, 40); // harness strap
+  g.lineBetween(19, 38, 41, 38);
+  g.lineBetween(19, 52, 41, 52);
   // legs
   g.lineStyle(5, INK, 1);
-  g.lineBetween(24, 52, 22, 63);
-  g.lineBetween(35, 52, 37, 63);
-  // boots
+  g.lineBetween(24, 52, 22, 62);
+  g.lineBetween(35, 52, 37, 62);
+  // boots with sole line
   g.fillStyle(INK, 1);
-  g.fillRoundedRect(15, 60, 12, 6, 2);
-  g.fillRoundedRect(32, 60, 12, 6, 2);
-  // body tunic
+  g.fillRoundedRect(14, 60, 13, 7, 2);
+  g.fillRoundedRect(32, 60, 13, 7, 2);
+  g.lineStyle(2, 0xf3efe3, 1);
+  g.lineBetween(15, 64, 26, 64);
+  g.lineBetween(33, 64, 44, 64);
+  // body with vest
   g.fillStyle(0x5b8dd9, 1);
   g.fillRoundedRect(18, 34, 23, 20, 7);
   g.lineStyle(4, INK, 1);
   g.strokeRoundedRect(18, 34, 23, 20, 7);
-  // belt
+  // vest hatch shading
+  g.lineStyle(2, INK, 0.45);
+  g.lineBetween(25, 38, 21, 52);
+  g.lineBetween(31, 38, 27, 52);
+  g.lineBetween(37, 38, 33, 52);
+  // belt with buckle
   g.lineStyle(3, INK, 1);
-  g.lineBetween(19, 46, 40, 46);
-  // arm reaching forward
+  g.lineBetween(19, 47, 40, 47);
+  g.strokeRect(27, 44, 6, 6);
+  // back arm
   g.lineStyle(4, INK, 1);
-  g.lineBetween(38, 39, 49, 45);
+  g.lineBetween(22, 40, 16, 48);
   g.fillStyle(0xffd9b3, 1);
-  g.fillCircle(50, 46, 4.5);
-  g.strokeCircle(50, 46, 4.5);
+  g.fillCircle(15, 50, 4);
+  g.strokeCircle(15, 50, 4);
+  // front arm (bent, reaching forward to hold the gun)
+  g.lineStyle(4, INK, 1);
+  g.lineBetween(38, 39, 45, 44);
+  g.lineBetween(45, 44, 51, 41);
+  g.fillStyle(0xffd9b3, 1);
+  g.fillCircle(52, 41, 4.5);
+  g.strokeCircle(52, 41, 4.5);
   // head
   g.fillStyle(0xffd9b3, 1);
-  g.fillCircle(30, 25, 10);
+  g.fillCircle(30, 24, 11);
   g.lineStyle(4, INK, 1);
-  g.strokeCircle(30, 25, 10);
-  // helmet dome
+  g.strokeCircle(30, 24, 11);
+  // helmet dome (half-disc)
   g.fillStyle(0x75806b, 1);
-  g.fillEllipse(30, 15, 36, 22);
+  g.slice(30, 26, 15, Math.PI, 0, false);
+  g.fillPath();
   g.lineStyle(4, INK, 1);
-  g.strokeEllipse(30, 15, 36, 22);
+  g.slice(30, 26, 15, Math.PI, 0, false);
+  g.strokePath();
   // helmet brim
-  g.lineStyle(4, INK, 1);
-  g.lineBetween(11, 24, 47, 24);
-  // eye (looking right, under the brim)
+  g.fillStyle(0x75806b, 1);
+  g.fillRoundedRect(12, 24, 38, 5, 2);
+  g.lineStyle(3, INK, 1);
+  g.strokeRoundedRect(12, 24, 38, 5, 2);
+  // helmet badge
+  g.fillStyle(0xffd93a, 1);
+  g.fillCircle(30, 16, 3);
+  g.lineStyle(2, INK, 1);
+  g.strokeCircle(30, 16, 3);
+  // eye + determined brow
   g.fillStyle(INK, 1);
-  g.fillCircle(35, 29, 2.2);
+  g.fillCircle(37, 32, 2.2);
+  g.lineStyle(2, INK, 1);
+  g.lineBetween(33, 29, 41, 30);
   g.generateTexture('soldier', 56, 72);
   g.clear();
 
@@ -166,6 +207,89 @@ function makeTextures(scene) {
   g.generateTexture('ring', 60, 60);
   g.clear();
 
+  // -- doodle sun (120x120) with a sleepy face -----------------------------------
+  g.fillStyle(0xffd93a, 1);
+  g.fillCircle(60, 60, 28);
+  g.lineStyle(4, INK, 1);
+  g.strokeCircle(60, 60, 28);
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2 + 0.2;
+    g.lineBetween(60 + Math.cos(a) * 37, 60 + Math.sin(a) * 37,
+      60 + Math.cos(a) * 51, 60 + Math.sin(a) * 51);
+  }
+  g.lineStyle(3, INK, 1);
+  g.beginPath(); g.arc(50, 58, 6, Math.PI * 1.15, Math.PI * 1.85); g.strokePath();
+  g.beginPath(); g.arc(70, 58, 6, Math.PI * 1.15, Math.PI * 1.85); g.strokePath();
+  g.beginPath(); g.arc(60, 64, 9, Math.PI * 0.2, Math.PI * 0.8); g.strokePath();
+  g.generateTexture('sun', 120, 120);
+  g.clear();
+
+  // -- doodle bird (44x26): classic "m" scribble ----------------------------------
+  g.lineStyle(3, INK, 0.9);
+  const bx = [4, 10, 16, 22, 28, 34, 40];
+  const by = [18, 9, 14, 9, 14, 9, 18];
+  for (let i = 0; i < bx.length - 1; i++) g.lineBetween(bx[i], by[i], bx[i + 1], by[i + 1]);
+  g.generateTexture('bird', 44, 26);
+  g.clear();
+
+  // -- bush (100x64) ---------------------------------------------------------------
+  g.fillStyle(0x6da57c, 1);
+  g.fillCircle(30, 44, 20);
+  g.fillCircle(52, 36, 24);
+  g.fillCircle(74, 44, 18);
+  g.lineStyle(3, INK, 1);
+  g.strokeCircle(30, 44, 20);
+  g.strokeCircle(52, 36, 24);
+  g.strokeCircle(74, 44, 18);
+  g.lineStyle(2, INK, 0.5);
+  g.lineBetween(40, 30, 34, 44);
+  g.lineBetween(56, 26, 50, 42);
+  g.lineBetween(68, 34, 62, 46);
+  g.generateTexture('bush', 100, 64);
+  g.clear();
+
+  // -- rock (76x54) -------------------------------------------------------------------
+  g.fillStyle(0x9a9a9a, 1);
+  const rp = [[6, 48], [14, 20], [34, 8], [58, 16], [70, 40], [64, 50]];
+  for (let i = 0; i < rp.length; i++) {
+    const p1 = rp[i], p2 = rp[(i + 1) % rp.length];
+    g.fillTriangle(36, 34, p1[0], p1[1], p2[0], p2[1]);
+  }
+  g.lineStyle(3, INK, 1);
+  for (let i = 0; i < rp.length; i++) {
+    const p1 = rp[i], p2 = rp[(i + 1) % rp.length];
+    g.lineBetween(p1[0], p1[1], p2[0], p2[1]);
+  }
+  g.lineStyle(2, INK, 0.6);
+  g.lineBetween(30, 22, 36, 38);
+  g.lineBetween(36, 38, 30, 46);
+  g.generateTexture('rock', 76, 54);
+  g.clear();
+
+  // -- flower (36x56) -------------------------------------------------------------------
+  g.lineStyle(3, 0x4a7c59, 1);
+  g.lineBetween(18, 54, 18, 26);
+  g.lineBetween(18, 40, 10, 34);
+  g.fillStyle(0xff8ab3, 1);
+  for (let i = 0; i < 5; i++) {
+    const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
+    g.fillCircle(18 + Math.cos(a) * 9, 16 + Math.sin(a) * 9, 6);
+  }
+  g.fillStyle(0xffd93a, 1);
+  g.fillCircle(18, 16, 5);
+  g.lineStyle(2, INK, 1);
+  g.strokeCircle(18, 16, 5);
+  g.generateTexture('flower', 36, 56);
+  g.clear();
+
+  // -- paper grain tile (128x128) --------------------------------------------------------
+  for (let i = 0; i < 90; i++) {
+    g.fillStyle(0x2b2b2b, 0.5);
+    g.fillCircle(Math.random() * 128, Math.random() * 128, Math.random() * 1.2 + 0.3);
+  }
+  g.generateTexture('grain', 128, 128);
+  g.clear();
+
   // -- floating platform slab (240x36) --------------------------------------
   g.fillStyle(0xe8e2cf, 1);
   g.fillRoundedRect(2, 2, 236, 32, 8);
@@ -181,6 +305,12 @@ function makeTextures(scene) {
   // -- ground strip (2400x110) ----------------------------------------------
   g.fillStyle(0xded5b8, 1);
   g.fillRect(0, 0, 2400, 110);
+  // pebbles
+  g.fillStyle(0xc9bd9a, 1);
+  for (let i = 0; i < 46; i++) {
+    g.fillEllipse(Math.random() * 2400, 22 + Math.random() * 78,
+      8 + Math.random() * 10, 5 + Math.random() * 5);
+  }
   g.lineStyle(2, INK, 0.4);
   for (let x = 40; x < 2400; x += 90) g.lineBetween(x, 30, x - 22, 100);
   g.lineStyle(5, INK, 1);
@@ -200,6 +330,15 @@ function makeTextures(scene) {
   g.lineStyle(3, INK, 1);
   g.lineBetween(4, 4, 60, 60);
   g.lineBetween(60, 4, 4, 60);
+  // wood grain + corner nails
+  g.lineStyle(2, INK, 0.4);
+  g.lineBetween(10, 24, 54, 22);
+  g.lineBetween(10, 44, 54, 46);
+  g.fillStyle(INK, 1);
+  g.fillCircle(10, 10, 2);
+  g.fillCircle(54, 10, 2);
+  g.fillCircle(10, 54, 2);
+  g.fillCircle(54, 54, 2);
   g.generateTexture('crate', 64, 64);
   g.clear();
 
@@ -308,6 +447,31 @@ export class ArenaScene extends Phaser.Scene {
       this.add.image(x + Phaser.Math.Between(-30, 30), GROUND_TOP - 12, 'tuft')
         .setDepth(20).setScale(0.8 + Math.random() * 0.7).setAlpha(0.95);
     }
+
+    // ---- doodle decorations (no collision) --------------------------------------
+    // sleepy sun, fixed in the sky
+    this.add.image(2150, 190, 'sun').setScrollFactor(0.15).setDepth(-25).setScale(1.2);
+    // birds drifting with the clouds
+    for (let i = 0; i < 6; i++) {
+      this.add.image(Phaser.Math.Between(100, WORLD_W - 100), Phaser.Math.Between(150, 450), 'bird')
+        .setScrollFactor(0.35).setDepth(-15).setScale(0.8 + Math.random() * 0.6).setAlpha(0.9);
+    }
+    // bushes, rocks and flowers along the ground
+    for (let x = 120; x < WORLD_W; x += 260) {
+      this.add.image(x + Phaser.Math.Between(-60, 60), GROUND_TOP - 20, 'bush')
+        .setDepth(4).setScale(0.8 + Math.random() * 0.5);
+    }
+    for (let x = 300; x < WORLD_W; x += 430) {
+      this.add.image(x + Phaser.Math.Between(-80, 80), GROUND_TOP - 12, 'rock')
+        .setDepth(4).setScale(0.7 + Math.random() * 0.5);
+    }
+    for (let x = 200; x < WORLD_W; x += 340) {
+      this.add.image(x + Phaser.Math.Between(-70, 70), GROUND_TOP - 18, 'flower')
+        .setDepth(4).setScale(0.9);
+    }
+    // subtle paper grain over the whole world
+    this.add.tileSprite(0, 0, WORLD_W, WORLD_H, 'grain')
+      .setOrigin(0).setAlpha(0.05).setDepth(40);
 
     // ---- player ---------------------------------------------------------------
     const pSpawn = map.spawns[0] || { x: 1200, y: 1000 };

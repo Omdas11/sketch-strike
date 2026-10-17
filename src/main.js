@@ -223,3 +223,24 @@ window.__sketchStrikeGame = new Phaser.Game({
   },
   scene: [ArenaScene],
 });
+
+// TEMPORARY touch diagnostics for the phone-controller bug (remove after fix)
+setInterval(() => {
+  const b = document.getElementById('touch-dbg');
+  if (!b) return;
+  const tui = document.getElementById('touch-ui');
+  const L = document.getElementById('stick-left');
+  const R = document.getElementById('stick-right');
+  const g = window.__sketchStrikeGame;
+  const a = (g && g.scene) ? g.scene.getScene('arena') : null;
+  const ts = a ? a.touchState : null;
+  const fmt = (s) => {
+    const d = (s && s._dbg) || { pid: '?', x: 0, y: 0, n: 0 };
+    return 'pid=' + d.pid + ' x=' + Number(d.x).toFixed(2) + ' y=' + Number(d.y).toFixed(2) + ' #' + d.n;
+  };
+  b.textContent =
+    'mode=' + ui.mode + ' touchUI=' + (tui ? (tui.style.display || 'css') : '?') +
+    ' started=' + ui.started +
+    '\nL ' + fmt(L) + '\nR ' + fmt(R) +
+    (ts ? '\nts moveX=' + ts.moveX.toFixed(2) + ' thrust=' + ts.thrust + ' aim=' + ts.aiming + ' fire=' + ts.firing : '\nno scene');
+}, 300);
