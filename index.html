@@ -2,16 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>Sketch Strike - arena playground</title>
   <style>
-    html, body { margin: 0; padding: 0; height: 100%; background: #141414; overflow: hidden; }
-    #game { width: 100vw; height: 100vh; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; background: #141414; overflow: hidden;
+      touch-action: none; overscroll-behavior: none;
+      user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+    }
+    #game { width: 100vw; height: 100vh; height: 100dvh; }
     canvas { display: block; }
+    /* portrait phones: prompt to rotate instead of a squished game */
+    #rotate-hint {
+      display: none; position: fixed; inset: 0; z-index: 50;
+      background: #f3efe3; color: #2b2b2b;
+      flex-direction: column; align-items: center; justify-content: center;
+      font-family: "Segoe Print", "Comic Sans MS", cursive; text-align: center;
+      padding: 24px;
+    }
+    #rotate-hint .phone {
+      width: 54px; height: 92px; border: 5px solid #2b2b2b; border-radius: 10px;
+      margin-bottom: 24px; position: relative;
+      animation: rot 1.8s ease-in-out infinite;
+    }
+    #rotate-hint .phone::after {
+      content: ""; position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+      width: 8px; height: 8px; border-radius: 50%; background: #2b2b2b;
+    }
+    @keyframes rot {
+      0%, 25% { transform: rotate(0deg); }
+      65%, 100% { transform: rotate(90deg); }
+    }
+    #rotate-hint .t1 { font-size: 26px; margin-bottom: 8px; }
+    #rotate-hint .t2 { font-size: 15px; color: #6b6b6b; }
   </style>
 </head>
 <body>
   <div id="game"></div>
+  <div id="rotate-hint">
+    <div class="phone"></div>
+    <div class="t1">ROTATE YOUR PHONE</div>
+    <div class="t2">Sketch Strike plays in landscape</div>
+  </div>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
