@@ -35,6 +35,15 @@
     }
     #rotate-hint .t1 { font-size: 26px; margin-bottom: 8px; }
     #rotate-hint .t2 { font-size: 15px; color: #6b6b6b; }
+    #rotate-hint { cursor: pointer; }
+    /* manual fullscreen toggle, works on phone and desktop */
+    #fs-btn {
+      position: fixed; top: 10px; right: 10px; z-index: 40;
+      font-family: "Segoe Print", "Comic Sans MS", cursive; font-size: 14px;
+      color: #2b2b2b; background: #f3efe3;
+      border: 3px solid #2b2b2b; border-radius: 10px;
+      padding: 6px 12px; cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -42,8 +51,9 @@
   <div id="rotate-hint">
     <div class="phone"></div>
     <div class="t1">ROTATE YOUR PHONE</div>
-    <div class="t2">Sketch Strike plays in landscape</div>
+    <div class="t2">or tap here - the game turns itself landscape</div>
   </div>
+  <button id="fs-btn" aria-label="Toggle fullscreen">FULL</button>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
