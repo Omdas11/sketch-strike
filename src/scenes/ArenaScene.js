@@ -145,10 +145,9 @@ function makeTextures(scene) {
   g.lineStyle(3, 0x4a7c59, 1);
   const blades = [[8, 44, 4, 14], [22, 44, 20, 8], [36, 44, 38, 12], [50, 44, 54, 10], [62, 44, 66, 18]];
   for (const [x1, y1, x2, y2] of blades) {
-    g.beginPath();
-    g.moveTo(x1, y1);
-    g.quadraticCurveTo(x1, y2 + 10, x2, y2);
-    g.strokePath();
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2 - 5;
+    g.lineBetween(x1, y1, mx, my);
+    g.lineBetween(mx, my, x2, y2);
   }
   g.generateTexture('tuft', 70, 46);
   g.clear();
