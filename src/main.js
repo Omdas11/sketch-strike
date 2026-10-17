@@ -37,7 +37,12 @@ function applyMode() {
   setTouchUIVisible(mobile);
   if (modeBtn) modeBtn.textContent = mobile ? 'MOBILE' : 'DESKTOP';
   try { localStorage.setItem('sketch-mode', ui.mode); } catch (e) {}
-  const arena = window.game && window.game.scene.getScene('arena');
+  // TEMPORARY diagnostic: what is window.game at this point?
+  if (window.__boot && window.__boot.indexOf('mode-checked') === -1) {
+    window.__boot.push('mode-checked: game=' + typeof window.game +
+      ' scene=' + typeof (window.game && window.game.scene));
+  }
+  const arena = (window.game && window.game.scene) ? window.game.scene.getScene('arena') : null;
   if (arena && arena.updateControlHint) arena.updateControlHint();
 }
 if (modeBtn) {
