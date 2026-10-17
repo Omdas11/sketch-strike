@@ -1,0 +1,1 @@
+{"dependencies":{"phaser":"^3.90.0"},"description":"Sketch Strike - original 2D arena shooter playground (working title). Original code and art; game-logic inspired by the 2D jetpack-shooter genre.","devDependencies":{"vite":"^6.0.0"},"name":"sketch-strike","private":true,"scripts":{"build":"vite build","dev":"vite","preview":"vite preview"},"type":"module","version":"0.1.0"}
