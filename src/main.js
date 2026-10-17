@@ -108,6 +108,47 @@ applyMode();
 // no long-press menu / text selection getting in the way of the game
 document.addEventListener('contextmenu', (e) => { if (isMobile) e.preventDefault(); });
 
+// main menu + end-of-match card (DOM overlays, wired to the arena scene)
+function arenaScene() {
+  const g = window.__sketchStrikeGame;
+  return (g && g.scene) ? g.scene.getScene('arena') : null;
+}
+function restartArena() {
+  const a = arenaScene();
+  if (a) a.scene.restart();
+}
+window.SketchMenu = {
+  show() { document.getElementById('menu').style.display = 'flex'; },
+  hide() { document.getElementById('menu').style.display = 'none'; },
+  showEnd(title, sub) {
+    document.getElementById('end-title').textContent = title;
+    document.getElementById('end-sub').textContent = sub;
+    document.getElementById('endcard').style.display = 'flex';
+  },
+  hideEnd() { document.getElementById('endcard').style.display = 'none'; },
+};
+document.querySelectorAll('#map-row button').forEach((b) => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#map-row button').forEach((x) => x.classList.remove('sel'));
+    b.classList.add('sel');
+    ui.map = b.dataset.map;
+  });
+});
+document.getElementById('start-btn').addEventListener('click', () => {
+  ui.started = true;
+  window.SketchMenu.hide();
+  restartArena();
+});
+document.getElementById('rematch-btn').addEventListener('click', () => {
+  window.SketchMenu.hideEnd();
+  restartArena();
+});
+document.getElementById('tomenu-btn').addEventListener('click', () => {
+  ui.started = false;
+  window.SketchMenu.hideEnd();
+  restartArena(); // create() shows the menu again since ui.started is false
+});
+
 window.__sketchStrikeGame = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
